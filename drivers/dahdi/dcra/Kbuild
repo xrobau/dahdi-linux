@@ -1,0 +1,18 @@
+obj-$(DAHDI_BUILD_ALL)$(CONFIG_DAHDI_CHANNEL_PROC) += dcra.o
+
+EXTRA_CFLAGS += -I$(src)/.. -Wno-undef
+
+PROC_H_PATH:= /usr/src/linux-headers-4.19.0-13-common/include/linux/proc_fs.h
+ifeq ($(notdir $(PROC_H_PATH)), proc_fs.h)
+    #check kernel whether support remove_proc_subtree() function 
+    SUPPORT_RPST:=$(shell if grep -q "extern int remove_proc_subtree" $(PROC_H_PATH); then echo "yes"; else echo "no"; fi)
+    ifeq ($(SUPPORT_RPST),yes)
+        EXTRA_CFLAGS+=-DUNSUPPORT_RPST=0
+     else
+        EXTRA_CFLAGS+=-DUNSUPPORT_RPST=1
+    endif
+else
+    EXTRA_CFLAGS+=-DUNSUPPORT_RPST=0
+endif
+
+dcra-objs := base.o

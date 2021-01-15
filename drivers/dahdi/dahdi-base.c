@@ -483,6 +483,18 @@ static struct dahdi_chan *chan_from_num(unsigned int channo)
 	return chan;
 }
 
+/*
+ *Export symbol for driver module to get channel data struture by channel number.
+ *when module loaded, dahdi-base.c maintains a list of channels, traversing this
+ *list we can get dahdi channel structure, and the member pvt(dahdi_chan->prv)
+ *points to channel's data structure (struct wctdm or struct a24xx)
+ */
+struct dahdi_chan *dahdi_get_chan_from_num(unsigned int channo)
+{
+        return chan_from_num(channo);
+}
+EXPORT_SYMBOL(dahdi_get_chan_from_num);
+
 static inline struct dahdi_chan *chan_from_file(struct file *file)
 {
 	return (file->private_data) ?
